@@ -26,3 +26,6 @@ jobs:
     - <<: *slim
       env:
       - MATLAB_VERSION: R2018b
+    - <<: *slim
+      env:
+      - MATLAB_VERSION: R2016b
