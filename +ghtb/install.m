@@ -1,11 +1,11 @@
-function install(repository, varargin)
-    % INSTALL(repository, varargin)
+function install(target, varargin)
+    % INSTALL(target, varargin)
     %   Description:
     %     Provides a way to directly 'install' MATLAB Community Toolboxes from 
     %     Github. For upgrade and downgrade use-cases, users can set the `override` option to
     %     force the install.
     %   Inputs:
-    %     repository[required]: (string) Target repo for Toolbox e.g. 'org1/repo1'
+    %     target[required]: (string) Toolbox repo (e.g. 'org1/repo1') or local path to *.mltbx
     %     version[optional, default='latest']: (string) Version to be installed e.g. '1.0.0'
     %     override[optional, default=false]: (boolean) Flag to indicate if should override an
     %                                        existing install
@@ -20,57 +20,83 @@ function install(repository, varargin)
     %     ghtb.install('guzman-raphael/compareVersions')
     %     ghtb.install('guzman-raphael/compareVersions', 'version', '1.0.5')
     %     ghtb.install('guzman-raphael/compareVersions', 'version', '1.0.4', 'override', true)
+    clear('functions'); %needed for uninstall of mex-based toolboxes
+    s = settings;
     p = inputParser;
-    addRequired(p, 'repository');
+    addRequired(p, 'target');
     addOptional(p, 'version', 'latest');
     addOptional(p, 'override', false);
-    parse(p, repository, varargin{:});
-    repository = p.Results.repository;
+    parse(p, target, varargin{:});
+    target = p.Results.target;
     version = p.Results.version;
     override = p.Results.override;
-    % get release meta (assumes single .mltbx file artifact)
-    GitHubAPI = 'https://api.github.com';
-    if strcmp(version, 'latest')
-        url = [GitHubAPI '/repos/' repository '/releases/latest'];
-        options = weboptions('HeaderFields', {'Accept', 'application/vnd.github.v3.raw'}, ...
-                             'ContentType', 'json');
-        data = webread(url, options);
+    if ~contains(target, '.mltbx')
+        % get release meta (assumes single .mltbx file artifact)
+        GitHubAPI = 'https://api.github.com';
+        if strcmp(version, 'latest')
+            url = [GitHubAPI '/repos/' target '/releases/latest'];
+            options = weboptions('HeaderFields', {'Accept', ...
+                                                  'application/vnd.github.v3.raw'}, ...
+                                'ContentType', 'json');
+            data = webread(url, options);
+        else
+            url = [GitHubAPI '/repos/' target '/releases'];
+            options = weboptions('HeaderFields', {'Accept', ...
+                                                  'application/vnd.github.v3.raw'}, ...
+                                'ContentType', 'json');
+            data = webread(url, options);
+            % need to optimize to break out on first match
+            data = data(arrayfun(@(x) strcmp(x.tag_name, version), data, ...
+                                 'UniformOutput', true));
+        end
+        % determine Toolbox name
+        toolboxName = data.assets.name(1:end-6);
+        % check if conflict with existing (assumes Toolbox name matches *.mltbx name)
+        conflictCheck(toolboxName, override);
+        % download
+        headers = {...
+            'Content-Type', 'application/octet-stream'; ...
+            'Accept', 'application/octet-stream'...
+        };
+        options = weboptions(...
+            'HeaderFields', headers, ...
+            'RequestMethod', lower('GET'), ...
+            'Timeout', 60, ...
+            'CertificateFilename', 'default', ...
+            'ContentType', 'binary', ...
+            'MediaType', 'application/octet-stream', ...
+            'CharacterEncoding', 'ISO-8859-1'...
+        );
+        tmp_toolbox = [tempname '.mltbx'];
+        status = websave(tmp_toolbox, data.assets.url, options);
+        % install
+        matlab.addons.toolbox.installToolbox(tmp_toolbox);
+        % remove temp toolbox file
+        delete(tmp_toolbox);
     else
-        url = [GitHubAPI '/repos/' repository '/releases'];
-        options = weboptions('HeaderFields', {'Accept', 'application/vnd.github.v3.raw'}, ...
-                             'ContentType', 'json');
-        data = webread(url, options);
-        % need to optimize to break out on first match
-        data = data(arrayfun(@(x) strcmp(x.tag_name, version), data, 'UniformOutput', true));
+        % determine Toolbox name
+        [~, toolboxName, ~] = fileparts(target);
+        % check if conflict with existing (assumes Toolbox name matches *.mltbx name)
+        conflictCheck(toolboxName, override);
+        % install
+        matlab.addons.toolbox.installToolbox(target);
     end
-    % check if conflict with existing (assumes Toolbox name matches *.mltbx name)
+    % add mex-based paths if applicable
+    if any(arrayfun(@(x) contains(x.name, mexext), ...
+                    dir([s.matlab.addons.InstallationFolder.ActiveValue '/Toolboxes/' ...
+                         toolboxName]), 'uni', true))
+        addpath([s.matlab.addons.InstallationFolder.ActiveValue '/Toolboxes/' toolboxName ...
+                 '/' mexext]);
+        savepath;
+    end
+end
+function conflictCheck(toolboxName, override)
     toolboxes = matlab.addons.toolbox.installedToolboxes;
-    matched = toolboxes(strcmp(data.assets.name(1:end-6), {toolboxes.Name}));
+    matched = toolboxes(strcmp(toolboxName, {toolboxes.Name}));
     if length(matched) > 0 && ~override
-        error('Error:Toolbox:Conflict', ['Toolbox ''' data.assets.name(1:end-6) ''' ' ...
+        error('Error:Toolbox:Conflict', ['Toolbox ''' toolboxName ''' ' ...
                             'detected. To override installation set ''override'' to true.']);
     elseif length(matched) > 0 && override
-        arrayfun(@(x) matlab.addons.toolbox.uninstallToolbox(x), matched, 'UniformOutput', ...
-                 false);
+        ghtb.uninstall(toolboxName);
     end
-    % download
-    headers = {...
-        'Content-Type', 'application/octet-stream'; ...
-        'Accept', 'application/octet-stream'...
-    };
-    options = weboptions(...
-        'HeaderFields', headers, ...
-        'RequestMethod', lower('GET'), ...
-        'Timeout', 60, ...
-        'CertificateFilename', 'default', ...
-        'ContentType', 'binary', ...
-        'MediaType', 'application/octet-stream', ...
-        'CharacterEncoding', 'ISO-8859-1'...
-    );
-    tmp_toolbox = [tempname '.mltbx'];
-    status = websave(tmp_toolbox, data.assets.url, options);
-    % install
-    matlab.addons.toolbox.installToolbox(tmp_toolbox);
-    % remove temp toolbox file
-    delete(tmp_toolbox);
 end
