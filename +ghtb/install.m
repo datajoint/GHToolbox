@@ -1,7 +1,7 @@
 function install(repository, varargin)
     % INSTALL(repository, varargin)
     %   Description:
-    %     Provides a way to directly 'install' MATLAB Community Toolboxes as addons from 
+    %     Provides a way to directly 'install' MATLAB Community Toolboxes from 
     %     Github. For upgrade and downgrade use-cases, users can set the `override` option to
     %     force the install.
     %   Inputs:

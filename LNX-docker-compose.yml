@@ -1,5 +1,5 @@
 # docker-compose -f LNX-docker-compose.yml up --build --exit-code-from app
-version: '2.2'
+version: '2.4'
 services:
   app:
     environment:
