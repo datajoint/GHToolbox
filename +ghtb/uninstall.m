@@ -15,7 +15,7 @@ function uninstall(varargin)
     parse(p, varargin{:});
     toolbox = p.Results.toolbox;
     % remove all versions of toolbox
-    addons = matlab.addons.installedAddons;
-    existing_id = addons.Identifier(addons.Name == toolbox);
-    arrayfun(@(x) matlab.addons.uninstall(x), existing_id, 'UniformOutput', false);
+    toolboxes = matlab.addons.toolbox.installedToolboxes;
+    matched = toolboxes(strcmp(toolbox, {toolboxes.Name}));
+    arrayfun(@(x) matlab.addons.toolbox.uninstallToolbox(x), matched, 'UniformOutput', false);
 end

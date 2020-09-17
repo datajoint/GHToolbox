@@ -32,8 +32,9 @@ services:
                   strjoin({'.vscode', '.git', '.env', '.gitignore', '.travis.yml', 'tests',\
                            '*docker-compose.yml', 'LICENSE', 'matlab.prf', 'package.m',\
                            'README.md'}, '\n'),\
-                  'ghtb', 'workingDir', '/src');\
-          matlab.addons.install('/src/GHToolbox.mltbx');\
+                  @() ghtb.version, 'rootPackageName', 'ghtb',\
+                  'workingDir', '/src');\
+          matlab.addons.toolbox.installToolbox('/src/GHToolbox.mltbx');\
           suite = TestSuite.fromFolder(pwd, 'IncludingSubfolders', true);\
           res = run(suite);\
           disp(res);\

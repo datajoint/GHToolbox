@@ -6,16 +6,16 @@ classdef TestManage < matlab.unittest.TestCase
             st = dbstack;
             disp(['---------------' st(1).name '---------------']);
             ghtb.install('guzman-raphael/compareVersions', 'version', 'latest');
-            addons = matlab.addons.installedAddons;
-            versions = addons.Version(addons.Name == 'compareVersions');
-            latest_ver = sum(cellfun(@(x) str2num(x), split(versions{1}, '.'), ...
+            toolboxes = matlab.addons.toolbox.installedToolboxes;
+            tb_version = toolboxes(strcmp('compareVersions', {toolboxes.Name})).Version;
+            latest_ver = sum(cellfun(@(x) str2num(x), strsplit(tb_version, '.'), ...
                                      'UniformOutput', true));
 
             ghtb.install(...
-                'guzman-raphael/compareVersions', 'version', '1.0.4', 'override', true);
-            addons = matlab.addons.installedAddons;
-            versions = addons.Version(addons.Name == 'compareVersions');
-            testCase.verifyTrue(sum(cellfun(@(x) str2num(x), split(versions{1}, '.'), ...
+                'guzman-raphael/compareVersions', 'version', '1.0.6', 'override', true);
+            toolboxes = matlab.addons.toolbox.installedToolboxes;
+            tb_version = toolboxes(strcmp('compareVersions', {toolboxes.Name})).Version;
+            testCase.verifyTrue(sum(cellfun(@(x) str2num(x), strsplit(tb_version, '.'), ...
                                             'UniformOutput', true)) < latest_ver);
         end
     end

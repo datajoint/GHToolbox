@@ -77,7 +77,7 @@
       <param.additional.sw.linux.url />
     </unset>
     <fileset.rootdir>
-      <file>${PROJECT_ROOT}</file>
+      <file>{{WORKDIR}}</file>
     </fileset.rootdir>
     <fileset.rootfiles>
       <file>{{ROOT_FILES}}</file>

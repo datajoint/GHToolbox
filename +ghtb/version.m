@@ -9,7 +9,7 @@ function varargout = version
     %     v = ghtb.version % return GHToolbox version
     %   License:
     %     MIT (use/copy/change/redistribute on own risk)
-    v = '0.0.1';
+    v = '1.0.0';
     if nargout
         varargout{1}=v;
     else
