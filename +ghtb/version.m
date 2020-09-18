@@ -8,10 +8,10 @@ function varargout = version
     %     ghtb.version % display GHToolbox version
     %     v = ghtb.version % return GHToolbox version
     %   Source:
-    %     https://www.github.com/guzman-raphael/GHToolbox.git
+    %     https://www.github.com/datajoint/GHToolbox.git
     %   License:
     %     MIT (use/copy/change/redistribute on own risk)
-    v = '1.0.6';
+    v = '1.0.7';
     if nargout
         varargout{1}=v;
     else

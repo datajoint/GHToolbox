@@ -20,6 +20,7 @@ function install(target, varargin)
     %     ghtb.install('guzman-raphael/compareVersions')
     %     ghtb.install('guzman-raphael/compareVersions', 'version', '1.0.7')
     %     ghtb.install('guzman-raphael/compareVersions', 'version', '1.0.6', 'override', true)
+    %     ghtb.install('compareVersions.mltbx') %install from local toolbox file
     clear('functions'); %needed for uninstall of mex-based toolboxes
     s = settings;
     p = inputParser;

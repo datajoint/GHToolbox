@@ -18,17 +18,22 @@ services:
       - |
         # init pref file, package into toolbox
         matlab -nodisplay -r "
-          doc_version = strrep(help('ghtb.version'), '<', '&lt;');\
-          doc_install = strrep(help('ghtb.install'), '<', '&lt;');\
-          doc_uninstall = strrep(help('ghtb.uninstall'), '<', '&lt;');\
-          package('GHToolbox', 'Raphael Guzman', 'raphael.h.guzman@gmail.com',\
-                  ['''ghtb'' provides a simple way to manage addon installation of ' \
-                   'open-source MATLAB Community Toolboxes linked to GitHub (via Releases).'],\
-                  strjoin({doc_install, doc_uninstall, doc_version}, '\n'),\
-                  {'.vscode', '.git', '.env', '.gitignore', '.travis.yml', 'tests',\
-                   '*docker-compose.yml', 'LICENSE', 'matlab.prf', 'package.m', 'README.md'},\
-                  @() ghtb.version,\
-                  {'+ghtb'});\
+          doc_version = help('ghtb.version');\
+          doc_install = help('ghtb.install');\
+          doc_uninstall = help('ghtb.uninstall');\
+          doc_package = help('ghtb.package');\
+          ghtb.package('GHToolbox',\
+                       'Raphael Guzman',\
+                       'raphael.h.guzman@gmail.com',\
+                       ['''ghtb'' provides a simple way to manage addon installation of ' \
+                        'open-source MATLAB Community Toolboxes linked to GitHub (via ' \
+                        'Releases).'],\
+                       strjoin({doc_install, doc_uninstall, doc_package, doc_version}, '\n'),\
+                       {'.vscode', '.git', '.env', '.gitignore', '.travis.yml', 'tests',\
+                        '*docker-compose.yml', 'LICENSE', 'matlab.prf', 'package.m',\
+                        'README.md'},\
+                       @() ghtb.version,\
+                       {'+ghtb'});\
           matlab.addons.toolbox.installToolbox('GHToolbox.mltbx');\
         "
         # Copy preferences
