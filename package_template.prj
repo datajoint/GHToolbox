@@ -77,10 +77,10 @@
       <param.additional.sw.linux.url />
     </unset>
     <fileset.rootdir>
-      <file>{{WORKDIR}}</file>
+      <file>{{ROOT_DIR}}</file>
     </fileset.rootdir>
     <fileset.rootfiles>
-      <file>{{ROOT_FILES}}</file>
+      {{ROOT_FILES}}
     </fileset.rootfiles>
     <fileset.depfun.included />
     <fileset.depfun.excluded />

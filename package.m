@@ -1,5 +1,6 @@
 function package(toolboxName, toolboxAuthor, toolboxContact, toolboxSummary, ...
-                 toolboxDescription, toolboxExclusions, toolboxVersionHandle, varargin)
+                 toolboxDescription, toolboxExclusions, toolboxVersionHandle, ...
+                 toolboxRootFiles, varargin)
     % parse input
     p = inputParser;
     addRequired(p, 'toolboxName');
@@ -9,10 +10,13 @@ function package(toolboxName, toolboxAuthor, toolboxContact, toolboxSummary, ...
     addRequired(p, 'toolboxDescription');
     addRequired(p, 'toolboxExclusions');
     addRequired(p, 'toolboxVersionHandle');
-    addOptional(p, 'rootPackageName', '');
-    addOptional(p, 'workingDir', pwd);
+    addRequired(p, 'toolboxRootFiles');
+    addOptional(p, 'toolboxRootDir', pwd);
+    addOptional(p, 'toolboxProjectDir', pwd);
+    addOptional(p, 'toolboxVersionDir', pwd);
     parse(p, toolboxName, toolboxAuthor, toolboxContact, toolboxSummary, ...
-          toolboxDescription, toolboxExclusions, toolboxVersionHandle, varargin{:});
+          toolboxDescription, toolboxExclusions, toolboxVersionHandle, ...
+          toolboxRootFiles, varargin{:});
     toolboxName = p.Results.toolboxName;
     toolboxAuthor = p.Results.toolboxAuthor;
     toolboxContact = p.Results.toolboxContact;
@@ -20,15 +24,17 @@ function package(toolboxName, toolboxAuthor, toolboxContact, toolboxSummary, ...
     toolboxDescription = p.Results.toolboxDescription;
     toolboxExclusions = p.Results.toolboxExclusions;
     toolboxVersionHandle = p.Results.toolboxVersionHandle;
-    rootPackageName = p.Results.rootPackageName;
-    workingDir = p.Results.workingDir;
+    toolboxRootFiles = p.Results.toolboxRootFiles;
+    toolboxRootDir = p.Results.toolboxRootDir;
+    toolboxProjectDir = p.Results.toolboxProjectDir;
+    toolboxVersionDir = p.Results.toolboxVersionDir;
     % get version
-    oldpath = addpath(workingDir);
+    oldpath = addpath(toolboxVersionDir);
     toolboxVersion = toolboxVersionHandle();
     path(oldpath);
     % set version
-    copyfile([workingDir '/package_template.prj'], [workingDir '/package.prj']);
-    fid = fopen([workingDir '/package.prj'], 'r');
+    copyfile([toolboxProjectDir '/package_template.prj'], [toolboxProjectDir '/package.prj']);
+    fid = fopen([toolboxProjectDir '/package.prj'], 'r');
     f = fread(fid, '*char')';
     fclose(fid);
     f = regexprep(f,'{{NAME}}', toolboxName);
@@ -38,17 +44,14 @@ function package(toolboxName, toolboxAuthor, toolboxContact, toolboxSummary, ...
     f = regexprep(f,'{{DESCRIPTION}}', toolboxDescription);
     f = regexprep(f,'{{VERSION}}', toolboxVersion);
     f = regexprep(f,'{{UUID}}', char(java.util.UUID.randomUUID));
-    f = regexprep(f,'{{EXCLUSIONS}}', toolboxExclusions);
-    if isempty(rootPackageName)
-        f = regexprep(f,'{{ROOT_FILES}}', ['\${PROJECT_ROOT}/' toolboxName '.m']);
-    else
-        f = regexprep(f,'{{ROOT_FILES}}', ['\${PROJECT_ROOT}/+' rootPackageName]);
-    end
-    f = regexprep(f,'{{WORKDIR}}', workingDir);
-    fid = fopen([workingDir '/package.prj'], 'w');
+    f = regexprep(f,'{{EXCLUSIONS}}', strjoin(toolboxExclusions, '\n'));
+    f = regexprep(f,'{{ROOT_FILES}}', strjoin(cellfun(@(x) ['<file>' x '</file>'], ...
+                                                      toolboxRootFiles, 'uni', false), '\n'));
+    f = regexprep(f,'{{ROOT_DIR}}', toolboxRootDir);
+    fid = fopen([toolboxProjectDir '/package.prj'], 'w');
     fprintf(fid,'%s',f);
     fclose(fid);
     % % build ToolBox
-    matlab.addons.toolbox.packageToolbox([workingDir '/package.prj'], ...
-                                         [workingDir '/' toolboxName]);
+    matlab.addons.toolbox.packageToolbox([toolboxProjectDir '/package.prj'], ...
+                                         [toolboxProjectDir '/' toolboxName]);
 end

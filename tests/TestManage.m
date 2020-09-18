@@ -5,6 +5,7 @@ classdef TestManage < matlab.unittest.TestCase
         function TestManage_testOverride(testCase)
             st = dbstack;
             disp(['---------------' st(1).name '---------------']);
+            ghtb.version
             ghtb.install('guzman-raphael/compareVersions', 'version', 'latest');
             toolboxes = matlab.addons.toolbox.installedToolboxes;
             tb_version = toolboxes(strcmp('compareVersions', {toolboxes.Name})).Version;

@@ -18,8 +18,8 @@ function install(target, varargin)
     %       single version per Toolbox is installed at any given time.
     %   Examples:
     %     ghtb.install('guzman-raphael/compareVersions')
-    %     ghtb.install('guzman-raphael/compareVersions', 'version', '1.0.5')
-    %     ghtb.install('guzman-raphael/compareVersions', 'version', '1.0.4', 'override', true)
+    %     ghtb.install('guzman-raphael/compareVersions', 'version', '1.0.7')
+    %     ghtb.install('guzman-raphael/compareVersions', 'version', '1.0.6', 'override', true)
     clear('functions'); %needed for uninstall of mex-based toolboxes
     s = settings;
     p = inputParser;

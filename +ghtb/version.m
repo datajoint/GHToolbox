@@ -7,9 +7,11 @@ function varargout = version
     %   Examples:
     %     ghtb.version % display GHToolbox version
     %     v = ghtb.version % return GHToolbox version
+    %   Source:
+    %     https://www.github.com/guzman-raphael/GHToolbox.git
     %   License:
     %     MIT (use/copy/change/redistribute on own risk)
-    v = '1.0.4';
+    v = '1.0.5';
     if nargout
         varargout{1}=v;
     else

@@ -1,0 +1,44 @@
+# docker-compose -f local-docker-compose.yml up --build
+version: '2.4'
+services:
+  app:
+    environment:
+    - MATLAB_USER
+    - MATLAB_LICENSE
+    - JUPYTER_PASSWORD=datajoint
+    - DISPLAY
+    image: raphaelguzman/matlab:${MATLAB_VERSION}-GUI
+    ports:
+      - "8888:8888"
+    user: ${MATLAB_UID}:${MATLAB_GID}
+    working_dir: /src
+    command:
+      - /bin/bash
+      - -c
+      - |
+        # init pref file, package into toolbox
+        matlab -nodisplay -r "
+          doc_version = help('ghtb.version');\
+          doc_install = help('ghtb.install');\
+          doc_uninstall = help('ghtb.uninstall');\
+          package('GHToolbox', 'Raphael Guzman', 'raphael.h.guzman@gmail.com',\
+                  ['''ghtb'' provides a simple way to manage addon installation of ' \
+                   'open-source MATLAB Community Toolboxes linked to GitHub (via Releases).'],\
+                  strjoin({doc_install, doc_uninstall, doc_version}, '\n'),\
+                  {'.vscode', '.git', '.env', '.gitignore', '.travis.yml', 'tests',\
+                   '*docker-compose.yml', 'LICENSE', 'matlab.prf', 'package.m', 'README.md'},\
+                  @() ghtb.version,\
+                  {'+ghtb'});\
+          matlab.addons.toolbox.installToolbox('GHToolbox.mltbx');\
+        "
+        # Copy preferences
+        cp /tmp/matlab.prf /home/muser/.matlab/${MATLAB_VERSION}/matlab.prf
+        # Interactive Jupyter Notebook environment
+        jupyter notebook
+    mac_address: $MATLAB_HOSTID
+    volumes:
+      ## Dev mounts
+      - .:/src
+      - /tmp/.X11-unix:/tmp/.X11-unix:rw
+      ## Additional mounts may go here
+      - ./matlab.prf:/tmp/matlab.prf
