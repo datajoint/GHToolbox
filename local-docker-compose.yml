@@ -18,9 +18,9 @@ services:
       - |
         # init pref file, package into toolbox
         matlab -nodisplay -r "
-          doc_version = help('ghtb.version');\
-          doc_install = help('ghtb.install');\
-          doc_uninstall = help('ghtb.uninstall');\
+          doc_version = strrep(help('ghtb.version'), '<', '&lt;');\
+          doc_install = strrep(help('ghtb.install'), '<', '&lt;');\
+          doc_uninstall = strrep(help('ghtb.uninstall'), '<', '&lt;');\
           package('GHToolbox', 'Raphael Guzman', 'raphael.h.guzman@gmail.com',\
                   ['''ghtb'' provides a simple way to manage addon installation of ' \
                    'open-source MATLAB Community Toolboxes linked to GitHub (via Releases).'],\

@@ -4,7 +4,7 @@ function uninstall(varargin)
     %     Provides a way to directly 'uninstall' MATLAB Community Toolboxes from 
     %     Github.
     %   Inputs:
-    %     toolboxName[required]: (string) Toolbox name to be uninstalled e.g. 'toolbox1'
+    %     toolboxName[required]: <string> Toolbox name to be uninstalled e.g. 'toolbox1'
     %   Assumptions:
     %     - Users do not wish to have multiple simultaneous versions installed i.e. all
     %       versions of specified toolbox are uninstalled (if applicable).
