@@ -20,12 +20,16 @@ function uninstall(varargin)
     toolboxes = matlab.addons.toolbox.installedToolboxes;
     matched = toolboxes(strcmp(toolboxName, {toolboxes.Name}));
     arrayfun(@(x) matlab.addons.toolbox.uninstallToolbox(x), matched, 'UniformOutput', false);
-    % add mex-based paths if applicable
-    if any(arrayfun(@(x) contains(x.name, mexext), ...
-                    dir([s.matlab.addons.InstallationFolder.ActiveValue '/Toolboxes/' ...
-                         toolboxName]), 'uni', true))
-        rmpath([s.matlab.addons.InstallationFolder.ActiveValue '/Toolboxes/' toolboxName ...
-                 '/' mexext]);
+    % remove mex-based path if applicable
+    if verLessThan('matlab', '9.2')
+        toolboxRoot = [s.matlab.addons.InstallationFolder.ActiveValue '/Toolboxes/' ...
+                       toolboxName '/code'];
+    else
+        toolboxRoot = [s.matlab.addons.InstallationFolder.ActiveValue '/Toolboxes/' ...
+                       toolboxName];
+    end
+    if any(arrayfun(@(x) contains(x.name, mexext), dir(toolboxRoot), 'uni', true))
+        rmpath([toolboxRoot '/' mexext]);
         savepath;
     end
 end
