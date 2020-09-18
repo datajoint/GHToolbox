@@ -16,20 +16,35 @@ function uninstall(varargin)
     addRequired(p, 'toolboxName');
     parse(p, varargin{:});
     toolboxName = p.Results.toolboxName;
-    % remove all versions of toolbox
-    toolboxes = matlab.addons.toolbox.installedToolboxes;
-    matched = toolboxes(strcmp(toolboxName, {toolboxes.Name}));
-    arrayfun(@(x) matlab.addons.toolbox.uninstallToolbox(x), matched, 'UniformOutput', false);
     % remove mex-based path if applicable
     if verLessThan('matlab', '9.2')
-        toolboxRoot = [s.matlab.addons.InstallationFolder.ActiveValue '/Toolboxes/' ...
-                       toolboxName '/code'];
+        toolboxRoot = [strrep(s.matlab.addons.InstallationFolder.ActiveValue, '\', '/') ...
+                       '/Toolboxes/' toolboxName '/code'];
     else
-        toolboxRoot = [s.matlab.addons.InstallationFolder.ActiveValue '/Toolboxes/' ...
-                       toolboxName];
+        toolboxRoot = [strrep(s.matlab.addons.InstallationFolder.ActiveValue, '\', '/') ...
+                       '/Toolboxes/' toolboxName];
     end
     if any(arrayfun(@(x) contains(x.name, mexext), dir(toolboxRoot), 'uni', true))
         rmpath([toolboxRoot '/' mexext]);
-        savepath;
+        pathfile = fullfile(userpath, 'startup.m');
+        if exist(pathfile, 'file') == 2
+            fid = fopen(pathfile, 'r');
+            f = fread(fid, '*char')';
+            fclose(fid);
+            f = regexprep(f,strrep(['\naddpath(''' [toolboxRoot '/' mexext] ''');\n'], ...
+                                   ')', '\)'), '');
+            fid = fopen(pathfile, 'w');
+            fprintf(fid,'%s',f);
+            fclose(fid);
+        end
+    end
+    % remove all versions of toolbox
+    toolboxes = matlab.addons.toolbox.installedToolboxes;
+    matched = toolboxes(strcmp(toolboxName, {toolboxes.Name}));
+    warning('off','toolboxmanagement_matlab_api:uninstallToolbox:manualCleanupNeeded');
+    arrayfun(@(x) matlab.addons.toolbox.uninstallToolbox(x), matched, 'UniformOutput', false);
+    warning('on','toolboxmanagement_matlab_api:uninstallToolbox:manualCleanupNeeded');
+    if exist(toolboxRoot, 'dir')
+        rmdir(toolboxRoot);
     end
 end
