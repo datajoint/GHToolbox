@@ -25,10 +25,19 @@ function uninstall(varargin)
                        '/Toolboxes/' toolboxName];
     end
     % remove all versions of toolbox
-    toolboxes = matlab.addons.toolbox.installedToolboxes;
-    matched = toolboxes(strcmp(toolboxName, {toolboxes.Name}));
     warning('off','toolboxmanagement_matlab_api:uninstallToolbox:manualCleanupNeeded');
-    arrayfun(@(x) matlab.addons.toolbox.uninstallToolbox(x), matched, 'UniformOutput', false);
+    try
+        matlab.addons.uninstall(toolboxName, 'All');
+    catch ME
+        if strcmp(ME.identifier, 'MATLAB:undefinedVarOrClass')
+            toolboxes = matlab.addons.toolbox.installedToolboxes;
+            matched = toolboxes(strcmp(toolboxName, {toolboxes.Name}));
+            arrayfun(@(x) matlab.addons.toolbox.uninstallToolbox(x), matched, ...
+                     'UniformOutput', false);
+        else
+            rethrow(ME);
+        end
+    end
     warning('on','toolboxmanagement_matlab_api:uninstallToolbox:manualCleanupNeeded');
     if exist(toolboxRoot, 'dir')
         rmdir(toolboxRoot);

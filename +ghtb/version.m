@@ -11,7 +11,7 @@ function varargout = version
     %     https://www.github.com/datajoint/GHToolbox.git
     %   License:
     %     MIT (use/copy/change/redistribute on own risk)
-    v = '1.0.9';
+    v = '1.0.10';
     if nargout
         varargout{1}=v;
     else

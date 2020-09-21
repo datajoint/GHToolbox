@@ -71,7 +71,15 @@ function install(target, varargin)
         tmp_toolbox = [tempname '.mltbx'];
         status = websave(tmp_toolbox, data.assets.url, options);
         % install
-        matlab.addons.toolbox.installToolbox(tmp_toolbox);
+        try
+            matlab.addons.install(tmp_toolbox, 'overwrite');
+        catch ME
+            if strcmp(ME.identifier, 'MATLAB:undefinedVarOrClass')
+                matlab.addons.toolbox.installToolbox(tmp_toolbox);
+            else
+                rethrow(ME);
+            end
+        end
         % remove temp toolbox file
         delete(tmp_toolbox);
     else
@@ -80,12 +88,29 @@ function install(target, varargin)
         % check if conflict with existing (assumes Toolbox name matches *.mltbx name)
         conflictCheck(toolboxName, override);
         % install
-        matlab.addons.toolbox.installToolbox(target);
+        try
+            matlab.addons.install(target, 'overwrite');
+        catch ME
+            if strcmp(ME.identifier, 'MATLAB:undefinedVarOrClass')
+                matlab.addons.toolbox.installToolbox(target);
+            else
+                rethrow(ME);
+            end
+        end
     end
 end
 function conflictCheck(toolboxName, override)
-    toolboxes = matlab.addons.toolbox.installedToolboxes;
-    matched = toolboxes(strcmp(toolboxName, {toolboxes.Name}));
+    try
+        toolboxes = matlab.addons.installedAddons;
+        matched = table2struct(toolboxes(toolboxes.Name == toolboxName, :));
+    catch ME
+        if strcmp(ME.identifier, 'MATLAB:undefinedVarOrClass')
+            toolboxes = matlab.addons.toolbox.installedToolboxes;
+            matched = toolboxes(strcmp(toolboxName, {toolboxes.Name}));
+        else
+            rethrow(ME);
+        end
+    end
     if length(matched) > 0 && ~override
         error('Error:Toolbox:Conflict', ['Toolbox ''' toolboxName ''' ' ...
                             'detected. To override installation set ''override'' to true.']);
