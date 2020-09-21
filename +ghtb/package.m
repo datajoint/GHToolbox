@@ -77,9 +77,10 @@ function package(toolboxName, toolboxAuthor, toolboxContact, toolboxSummary, ...
     toolboxVersionDir = p.Results.toolboxVersionDir;
     toolboxRequiredAddons = p.Results.toolboxRequiredAddons;
     % get version
-    oldpath = addpath(toolboxVersionDir);
+    oldpath = pwd;
+    cd(toolboxVersionDir);
     toolboxVersion = toolboxVersionHandle();
-    path(oldpath);
+    cd(oldpath);
     % copy template
     [ghtbRoot, ~, ~] = fileparts(which('ghtb.version'));
     copyfile([ghtbRoot '/package_prj.template'], [toolboxProjectDir '/package.prj']);

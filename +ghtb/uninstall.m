@@ -16,27 +16,13 @@ function uninstall(varargin)
     addRequired(p, 'toolboxName');
     parse(p, varargin{:});
     toolboxName = p.Results.toolboxName;
-    % remove mex-based path if applicable
+    % determine toolbox root
     if verLessThan('matlab', '9.2')
         toolboxRoot = [strrep(s.matlab.addons.InstallationFolder.ActiveValue, '\', '/') ...
                        '/Toolboxes/' toolboxName '/code'];
     else
         toolboxRoot = [strrep(s.matlab.addons.InstallationFolder.ActiveValue, '\', '/') ...
                        '/Toolboxes/' toolboxName];
-    end
-    if any(arrayfun(@(x) contains(x.name, mexext), dir(toolboxRoot), 'uni', true))
-        rmpath([toolboxRoot '/' mexext]);
-        pathfile = fullfile(userpath, 'startup.m');
-        if exist(pathfile, 'file') == 2
-            fid = fopen(pathfile, 'r');
-            f = fread(fid, '*char')';
-            fclose(fid);
-            f = regexprep(f,strrep(['\naddpath(''' [toolboxRoot '/' mexext] ''');\n'], ...
-                                   ')', '\)'), '');
-            fid = fopen(pathfile, 'w');
-            fprintf(fid,'%s',f);
-            fclose(fid);
-        end
     end
     % remove all versions of toolbox
     toolboxes = matlab.addons.toolbox.installedToolboxes;
@@ -46,5 +32,21 @@ function uninstall(varargin)
     warning('on','toolboxmanagement_matlab_api:uninstallToolbox:manualCleanupNeeded');
     if exist(toolboxRoot, 'dir')
         rmdir(toolboxRoot);
+    end
+    % remove mex-based path if applicable
+    paths = strsplit(path, ':');
+    pathfile = fullfile(userpath, 'startup.m');
+    for x = paths(cellfun(@(x) contains(x, toolboxRoot), paths, 'uni', true))
+        rmpath(x{1});
+        if exist(pathfile, 'file') == 2
+            fid = fopen(pathfile, 'r');
+            f = fread(fid, '*char')';
+            fclose(fid);
+            f = regexprep(f,strrep(['\naddpath(''' x{1} ''');\n'], ...
+                                   ')', '\)'), '');
+            fid = fopen(pathfile, 'w');
+            fprintf(fid,'%s',f);
+            fclose(fid);
+        end
     end
 end

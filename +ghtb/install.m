@@ -82,21 +82,6 @@ function install(target, varargin)
         % install
         matlab.addons.toolbox.installToolbox(target);
     end
-    % add mex-based path if applicable
-    if verLessThan('matlab', '9.2')
-        toolboxRoot = [strrep(s.matlab.addons.InstallationFolder.ActiveValue, '\', '/') ...
-                       '/Toolboxes/' toolboxName '/code'];
-    else
-        toolboxRoot = [strrep(s.matlab.addons.InstallationFolder.ActiveValue, '\', '/') ...
-                       '/Toolboxes/' toolboxName];
-    end
-    if any(arrayfun(@(x) contains(x.name, mexext), dir(toolboxRoot), 'uni', true))
-        addpath([toolboxRoot '/' mexext]);
-        pathfile = fullfile(userpath, 'startup.m');
-        fid = fopen(pathfile, 'a+');
-        fprintf(fid, '\n%s\n',['addpath(''' [toolboxRoot '/' mexext] ''');']);
-        fclose(fid);
-    end
 end
 function conflictCheck(toolboxName, override)
     toolboxes = matlab.addons.toolbox.installedToolboxes;
