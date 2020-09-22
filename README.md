@@ -65,3 +65,28 @@ ghtb.package('mym', ...
              'toolboxRootDir', 'distribution');
 ghtb.version % display GHToolbox version
 ```
+
+## Installation
+
+### Greater than R2016b (Recommended)
+
+1. Utilize MATLAB built-in GUI i.e. *Top Ribbon -> Add-Ons -> Get Add-Ons*
+2. Search and Select `GHToolbox`
+3. Select *Install from GitHub*
+
+### Less than R2016b
+
+1. Utilize MATLAB built-in GUI i.e. *Top Ribbon -> Add-Ons -> Get Add-Ons*
+2. Search and Select `GHToolbox`
+3. Select *Download from GitHub*
+4. Save `GHToolbox.mltbx` locally
+5. Navigate in MATLAB tree browser to saved toolbox file
+6. Right-Click and Select *Install*
+7. Select *Install*
+
+### From Source
+
+1. Download `GHToolbox.mltbx` locally
+5. Navigate in MATLAB tree browser to saved toolbox file
+6. Right-Click and Select *Install*
+7. Select *Install*
