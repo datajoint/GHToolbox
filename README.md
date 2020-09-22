@@ -72,7 +72,7 @@ ghtb.version % display GHToolbox version
 
 1. Utilize MATLAB built-in GUI i.e. *Top Ribbon -> Add-Ons -> Get Add-Ons*
 2. Search and Select `GHToolbox`
-3. Select *Install from GitHub*
+3. Select *Add from GitHub*
 
 ### Less than R2016b
 
