@@ -7,19 +7,19 @@ function package(toolboxName, toolboxAuthor, toolboxContact, toolboxSummary, ...
     %   Description:
     %     Provides a programatic way to 'package' MATLAB Community Toolboxes.
     %   Inputs:
-    %     toolboxName[required]: <string> Toolbox name, will create as '{{toolboxName}}.mltbx'.
-    %     toolboxAuthor[required]: <string> Toolbox author full name.
-    %     toolboxContact[required]: <string> Toolbox author email.
-    %     toolboxSummary[required]: <string> Toolbox summary. Limit to 140 characters.
-    %     toolboxDescription[required]: <string> Toolbox long description.
-    %     toolboxExclusions[required]: <cell> Paths to exclude. Based from 'toolboxRootDir'.
-    %     toolboxVersionHandle[required]: <handle> Function that will return semantic version
+    %     toolboxName[required]: (string) Toolbox name, will create as '{{toolboxName}}.mltbx'.
+    %     toolboxAuthor[required]: (string) Toolbox author full name.
+    %     toolboxContact[required]: (string) Toolbox author email.
+    %     toolboxSummary[required]: (string) Toolbox summary. Limit to 140 characters.
+    %     toolboxDescription[required]: (string) Toolbox long description.
+    %     toolboxExclusions[required]: (cell) Paths to exclude. Based from 'toolboxRootDir'.
+    %     toolboxVersionHandle[required]: (handle) Function that will return semantic version
     %                                              i.e. '0.0.0'
-    %     toolboxRootFiles[required]: <cell> Paths to include. Based from current directory.
-    %     toolboxRootDir[optional, default=pwd]: <string> Local path of Toolbox base directory.
-    %     toolboxProjectDir[optional, default=pwd]: <string> Path where Toolbox/.prj will write
-    %     toolboxVersionDir[optional, default=pwd]: <string> Path necessary for version func
-    %     *toolboxRequiredAddons[optional, default={}]: <cell> Toolboxes or addons to include.
+    %     toolboxRootFiles[required]: (cell) Paths to include. Based from current directory.
+    %     toolboxRootDir[optional, default=pwd]: (string) Local path of Toolbox base directory.
+    %     toolboxProjectDir[optional, default=pwd]: (string) Path where Toolbox/.prj will write
+    %     toolboxVersionDir[optional, default=pwd]: (string) Path necessary for version func
+    %     *toolboxRequiredAddons[optional, default={}]: (cell) Toolboxes or addons to include.
     %     * = Experimental
     %   Examples:
     %     ghtb.package('GHToolbox', ...

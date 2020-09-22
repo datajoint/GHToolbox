@@ -5,9 +5,9 @@ function install(target, varargin)
     %     Github. For upgrade and downgrade use-cases, users can set the `override` option to
     %     force the install.
     %   Inputs:
-    %     target[required]: <string> Toolbox repo (e.g. 'org1/repo1') or local path to *.mltbx
-    %     version[optional, default='latest']: <string> Version to be installed e.g. '1.0.0'
-    %     override[optional, default=false]: <boolean> Flag to indicate if should override an
+    %     target[required]: (string) Toolbox repo (e.g. 'org1/repo1') or local path to *.mltbx
+    %     version[optional, default='latest']: (string) Version to be installed e.g. '1.0.0'
+    %     override[optional, default=false]: (boolean) Flag to indicate if should override an
     %                                        existing install
     %   Assumptions:
     %     - Community Toolbox linked on FileExchange to GitHub via GitHub Releases.
@@ -49,6 +49,10 @@ function install(target, varargin)
             % need to optimize to break out on first match
             data = data(arrayfun(@(x) strcmp(x.tag_name, version), data, ...
                                  'UniformOutput', true));
+        end
+        if length(data.assets) == 0
+            error('GHToolbox:Release:NotFound', ...
+                  ['No matching release found at target ''' target '''.']);
         end
         % determine Toolbox name
         toolboxName = data.assets.name(1:end-6);

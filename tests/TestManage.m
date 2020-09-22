@@ -18,6 +18,13 @@ classdef TestManage < matlab.unittest.TestCase
             tb_version = toolboxes(strcmp('compareVersions', {toolboxes.Name})).Version;
             testCase.verifyTrue(sum(cellfun(@(x) str2num(x), strsplit(tb_version, '.'), ...
                                             'UniformOutput', true)) < latest_ver);
+            ghtb.uninstall('compareVersions');
+        end
+        function TestManage_initialize(testCase)
+            st = dbstack;
+            disp(['---------------' st(1).name '---------------']);
+            ghtb.initialize('prompt', false);
+            ghtb.initialize;
         end
     end
 end

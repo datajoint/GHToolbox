@@ -4,7 +4,7 @@ function uninstall(varargin)
     %     Provides a way to directly 'uninstall' MATLAB Community Toolboxes from 
     %     Github.
     %   Inputs:
-    %     toolboxName[required]: <string> Toolbox name to be uninstalled e.g. 'toolbox1'
+    %     toolboxName[required]: (string) Toolbox name to be uninstalled e.g. 'toolbox1'
     %   Assumptions:
     %     - Users do not wish to have multiple simultaneous versions installed i.e. all
     %       versions of specified toolbox are uninstalled (if applicable).
@@ -27,7 +27,9 @@ function uninstall(varargin)
     % remove all versions of toolbox
     warning('off','toolboxmanagement_matlab_api:uninstallToolbox:manualCleanupNeeded');
     try
-        matlab.addons.uninstall(toolboxName, 'All');
+        addons = matlab.addons.installedAddons;
+        arrayfun(@(x) matlab.addons.uninstall(x), ...
+                 addons.Identifier(addons.Name == toolboxName), 'UniformOutput', false);
     catch ME
         if strcmp(ME.identifier, 'MATLAB:undefinedVarOrClass')
             toolboxes = matlab.addons.toolbox.installedToolboxes;

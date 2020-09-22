@@ -1,0 +1,91 @@
+function require(requiredToolboxes, varargin)
+    % REQUIRE(requiredToolboxes, varargin)
+    %   Description:
+    %     Provides a way to directly require specific toolboxes with the option to 'install' if
+    %     not satisfied. Unsatisfied toolboxes with trigger a
+    %     'GHToolbox:requireToolboxes:Failed' error.
+    %   Inputs:
+    %     requiredToolboxes[required]: (cell) Toolboxes to be required and (if applicable)
+    %                                  resolved with installation. Each cell should contain a
+    %                                  struct with fields: Name[required, string],
+    %                                  ResolveTarget[required, string],
+    %                                  Version[optional, string]. Version specified 'pins' it
+    %                                  i.e. version equals operation. See below for examples.
+    %     prompt[optional, default=true]: (boolean) Whether to silently install or use prompts.
+    %   Examples:
+    %     requiredToolboxes = {...
+    %         struct(...
+    %             'Name', 'GHToolbox', ...
+    %             'ResolveTarget', 'datajoint/GHToolbox'...
+    %         ), ...
+    %         struct(...
+    %             'Name', 'compareVersions', ...
+    %             'ResolveTarget', 'guzman-raphael/compareVersions', ...
+    %             'Version', '1.0.8'...
+    %         )...
+    %     };
+    %     ghtb.require(requiredToolboxes)
+    %     ghtb.require(requiredToolboxes, 'prompt', false)
+    p = inputParser;
+    addOptional(p, 'prompt', true);
+    parse(p, requiredToolboxes, varargin{:});
+    prompt = p.Results.prompt;
+    % resolve GHToolbox dependencies
+    ghtb.initialize('prompt', prompt);
+    % determine installed toolboxes
+    try
+        toolboxes = table2struct(matlab.addons.installedAddons);
+        toolboxes = arrayfun(@(x) subsasgn(x(1), substruct('.', 'Name'), char(x(1).Name)), ...
+                             toolboxes, 'uni', true);
+        toolboxes = arrayfun(@(x) subsasgn(x(1), substruct('.', 'Version'), ...
+                                           char(x(1).Version)), toolboxes, 'uni', true);
+    catch ME
+        if strcmp(ME.identifier, 'MATLAB:undefinedVarOrClass')
+            toolboxes = matlab.addons.toolbox.installedToolboxes;
+        else
+            rethrow(ME);
+        end
+    end
+    installPromptMsg = {
+        'Toolbox ''%s'' did not meet the minimum minimum requirements.'
+        'Would you like to proceed with an upgrade?'
+    };
+    for tb = requiredToolboxes
+        matched = toolboxes(strcmp(tb{1}.Name, {toolboxes.Name}));
+        if ~isfield(tb{1}, 'Version') && any(arrayfun(@(x) strcmp(x.Name, tb{1}.Name), ...
+                                             matched, 'uni', true))
+            % toolbox found
+        elseif isfield(tb{1}, 'Version') && any(arrayfun(@(x) strcmp(x.Name, tb{1}.Name) && ...
+                compareVersions({x.Version}, tb{1}.Version), matched, 'uni', true))
+            % toolbox found with appropriate version
+        elseif ~isfield(tb{1}, 'Version') && ~isempty(tb{1}.ResolveTarget) && ...
+                (~prompt || strcmpi('yes', ...
+                                    ask(sprintf(sprintf('%s\n', ...
+                                                        installPromptMsg{:}), ...
+                                                tb{1}.Name))))
+            % toolbox not found so triggering process to install latest
+            ghtb.install(tb{1}.ResolveTarget, 'override', true, 'version', 'latest');
+        elseif isfield(tb{1}, 'Version') && ~isempty(tb{1}.ResolveTarget) && ...
+                (~prompt || strcmpi('yes', ...
+                                    ask(sprintf(sprintf('%s\n', ...
+                                                        installPromptMsg{:}), ...
+                                                tb{1}.Name))))
+            % toolbox not found so triggering process to install specific version
+            ghtb.install(tb{1}.ResolveTarget, 'override', true, 'version', tb{1}.Version);
+        else
+            error('GHToolbox:requireToolboxes:Failed', ...
+                  ['Toolbox ''' tb{1}.Name ''' is required but did not find ' ...
+                   'a matching version.']);
+        end
+    end
+end
+function choice = ask(question, choices)
+    if nargin<=1
+        choices = {'yes','no'};
+    end
+    choice = '';
+    choiceStr = sprintf('/%s',choices{:});
+    while ~ismember(choice, lower(choices))
+        choice = lower(input([question ' (' choiceStr(2:end) ') > '], 's'));
+    end
+end

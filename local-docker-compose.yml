@@ -22,13 +22,15 @@ services:
           doc_install = help('ghtb.install');\
           doc_uninstall = help('ghtb.uninstall');\
           doc_package = help('ghtb.package');\
+          doc_require = help('ghtb.require');\
           ghtb.package('GHToolbox',\
                        'Raphael Guzman',\
                        'raphael.h.guzman@gmail.com',\
                        ['''ghtb'' provides a simple way to manage addon installation of ' \
                         'open-source MATLAB Community Toolboxes linked to GitHub (via ' \
                         'Releases).'],\
-                       strjoin({doc_install, doc_uninstall, doc_package, doc_version}, '\n'),\
+                       strjoin({doc_install, doc_uninstall, doc_require, doc_package,\
+                                doc_version}, '\n'),\
                        {'.vscode', '.git', '.env', '.gitignore', '.travis.yml', 'tests',\
                         '*docker-compose.yml', 'LICENSE', 'matlab.prf', 'package.m',\
                         'README.md'},\
