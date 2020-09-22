@@ -28,7 +28,7 @@ function install(target, varargin)
     addOptional(p, 'version', 'latest');
     addOptional(p, 'override', false);
     parse(p, target, varargin{:});
-    target = p.Results.target;
+    target = strrep(p.Results.target, '\', '/');
     version = p.Results.version;
     override = p.Results.override;
     if ~contains(target, '.mltbx')

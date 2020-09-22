@@ -12,10 +12,12 @@ function package(toolboxName, toolboxAuthor, toolboxContact, toolboxSummary, ...
     %     toolboxContact[required]: (string) Toolbox author email.
     %     toolboxSummary[required]: (string) Toolbox summary. Limit to 140 characters.
     %     toolboxDescription[required]: (string) Toolbox long description.
-    %     toolboxExclusions[required]: (cell) Paths to exclude. Based from 'toolboxRootDir'.
+    %     toolboxExclusions[required]: (cell) Filepaths to exclude. Based from 
+    %                                  'toolboxRootDir'.
     %     toolboxVersionHandle[required]: (handle) Function that will return semantic version
     %                                              i.e. '0.0.0'
-    %     toolboxRootFiles[required]: (cell) Paths to include. Based from current directory.
+    %     toolboxRootFiles[required]: (cell) Filepaths to include. Based from current
+    %                                 directory.
     %     toolboxRootDir[optional, default=pwd]: (string) Local path of Toolbox base directory.
     %     toolboxProjectDir[optional, default=pwd]: (string) Path where Toolbox/.prj will write
     %     toolboxVersionDir[optional, default=pwd]: (string) Path necessary for version func
@@ -70,12 +72,14 @@ function package(toolboxName, toolboxAuthor, toolboxContact, toolboxSummary, ...
     toolboxContact = p.Results.toolboxContact;
     toolboxSummary = p.Results.toolboxSummary;
     toolboxDescription = p.Results.toolboxDescription;
-    toolboxExclusions = p.Results.toolboxExclusions;
+    toolboxExclusions = cellfun(@(x) strrep(x, '\', '/'), p.Results.toolboxExclusions, ...
+                                'uni', false);
     toolboxVersionHandle = p.Results.toolboxVersionHandle;
-    toolboxRootFiles = p.Results.toolboxRootFiles;
-    toolboxRootDir = p.Results.toolboxRootDir;
-    toolboxProjectDir = p.Results.toolboxProjectDir;
-    toolboxVersionDir = p.Results.toolboxVersionDir;
+    toolboxRootFiles = cellfun(@(x) strrep(x, '\', '/'), p.Results.toolboxRootFiles, ...
+                                'uni', false);
+    toolboxRootDir = strrep(p.Results.toolboxRootDir, '\', '/');
+    toolboxProjectDir = strrep(p.Results.toolboxProjectDir, '\', '/');
+    toolboxVersionDir = strrep(p.Results.toolboxVersionDir, '\', '/');
     toolboxRequiredAddons = p.Results.toolboxRequiredAddons;
     % get version
     oldpath = pwd;

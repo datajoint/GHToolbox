@@ -25,6 +25,11 @@ function uninstall(varargin)
                        '/Toolboxes/' toolboxName];
     end
     % remove all versions of toolbox
+    if ispc
+        paths = cellfun(@(x) strrep(x, '\', '/'), strsplit(path, ';'), 'uni', false);
+    else
+        paths = strsplit(path, ':');
+    end
     warning('off','toolboxmanagement_matlab_api:uninstallToolbox:manualCleanupNeeded');
     try
         addons = matlab.addons.installedAddons;
@@ -41,12 +46,9 @@ function uninstall(varargin)
         end
     end
     warning('on','toolboxmanagement_matlab_api:uninstallToolbox:manualCleanupNeeded');
-    if exist(toolboxRoot, 'dir')
-        rmdir(toolboxRoot);
-    end
     % remove mex-based path if applicable
-    paths = strsplit(path, ':');
     pathfile = fullfile(userpath, 'startup.m');
+    warning('off','MATLAB:rmpath:DirNotFound');
     for x = paths(cellfun(@(x) contains(x, toolboxRoot), paths, 'uni', true))
         rmpath(x{1});
         if exist(pathfile, 'file') == 2
@@ -59,5 +61,9 @@ function uninstall(varargin)
             fprintf(fid,'%s',f);
             fclose(fid);
         end
+    end
+    warning('on','MATLAB:rmpath:DirNotFound');
+    if exist(toolboxRoot, 'dir')
+        rmdir(toolboxRoot, 's');
     end
 end
