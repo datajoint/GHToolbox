@@ -24,7 +24,7 @@ function require(requiredToolboxes, varargin)
     %             'Version', '1.0.8'...
     %         )...
     %     };
-    %     ghtb.require(requiredToolboxes)
+    %     ghtb.require(requiredToolboxes) % require with prompts
     %     ghtb.require(requiredToolboxes, 'prompt', false)
     p = inputParser;
     addOptional(p, 'prompt', true);
