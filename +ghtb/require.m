@@ -12,6 +12,8 @@ function require(requiredToolboxes, varargin)
     %                                  Version[optional, string]. Version specified 'pins' it
     %                                  i.e. version equals operation. See below for examples.
     %     prompt[optional, default=true]: (boolean) Whether to silently install or use prompts.
+    %     resolveGHToolboxDeps[optional, default=true]: (boolean) Resolve dependencies related
+    %                                                   to GHToolbox.
     %   Examples:
     %     requiredToolboxes = {...
     %         struct(...
@@ -28,10 +30,14 @@ function require(requiredToolboxes, varargin)
     %     ghtb.require(requiredToolboxes, 'prompt', false)
     p = inputParser;
     addOptional(p, 'prompt', true);
+    addOptional(p, 'resolveGHToolboxDeps', true);
     parse(p, requiredToolboxes, varargin{:});
     prompt = p.Results.prompt;
+    resolveGHToolboxDeps = p.Results.resolveGHToolboxDeps;
     % resolve GHToolbox dependencies
-    ghtb.initialize('prompt', prompt);
+    if resolveGHToolboxDeps
+        ghtb.initialize('prompt', prompt);
+    end
     % determine installed toolboxes
     try
         toolboxes = table2struct(matlab.addons.installedAddons);

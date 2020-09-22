@@ -22,8 +22,6 @@ function initialize(varargin)
     if ~isempty(INVOKED) && ~force
         return
     end
-    % set cache
-    INVOKED = true;
     % require certain toolboxes
     requiredToolboxes = {...
         struct(...
@@ -31,5 +29,7 @@ function initialize(varargin)
             'ResolveTarget', 'guzman-raphael/compareVersions'...
         ) ...
     };
-    ghtb.require(requiredToolboxes, 'prompt', prompt);
+    ghtb.require(requiredToolboxes, 'prompt', prompt, 'resolveGHToolboxDeps', false);
+    % set cache
+    INVOKED = true;
 end
