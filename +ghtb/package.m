@@ -12,7 +12,7 @@ function package(toolboxName, toolboxAuthor, toolboxContact, toolboxSummary, ...
     %     toolboxContact[required]: (string) Toolbox author email.
     %     toolboxSummary[required]: (string) Toolbox summary. Limit to 140 characters.
     %     toolboxDescription[required]: (string) Toolbox long description.
-    %     toolboxExclusions[required]: (cell) Filepaths to exclude. Based from 
+    %     toolboxExclusions[required]: (cell) Filepaths to exclude. Based from
     %                                  'toolboxRootDir'.
     %     toolboxVersionHandle[required]: (handle) Function that will return semantic version
     %                                              i.e. '0.0.0'
