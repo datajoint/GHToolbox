@@ -87,6 +87,6 @@ ghtb.version % display GHToolbox version
 ### From Source
 
 1. Download `GHToolbox.mltbx` locally
-5. Navigate in MATLAB tree browser to saved toolbox file
-6. Right-Click and Select *Install*
-7. Select *Install*
+2. Navigate in MATLAB tree browser to saved toolbox file
+3. Right-Click and Select *Install*
+4. Select *Install*
