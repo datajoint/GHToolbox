@@ -68,7 +68,7 @@ ghtb.version % display GHToolbox version
 
 ## Installation
 
-### Greater than R2016b (Recommended)
+### (Recommended) Greater than R2016b
 
 1. Utilize MATLAB built-in GUI i.e. *Top Ribbon -> Add-Ons -> Get Add-Ons*
 2. Search and Select `GHToolbox`
