@@ -53,7 +53,7 @@ function require(requiredToolboxes, varargin)
         end
     end
     installPromptMsg = {
-        'Toolbox ''%s'' did not meet the minimum minimum requirements.'
+        'Toolbox ''%s'' did not meet the minimum requirements.'
         'Would you like to proceed with an upgrade?'
     };
     for tb = requiredToolboxes
