@@ -36,7 +36,8 @@ function install(target, varargin)
         GitHubAPI = 'https://api.github.com';
         options = weboptions('HeaderFields', {'Accept', ...
                                               'application/vnd.github.v3.raw'}, ...
-                             'ContentType', 'json');
+                             'ContentType', 'json', ...
+                             'Timeout', 60);
         if strcmp(version, 'latest')
             url = [GitHubAPI '/repos/' target '/releases/latest'];
             data = webread(url, options);
