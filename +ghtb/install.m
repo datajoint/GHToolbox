@@ -6,7 +6,11 @@ function install(target, varargin)
     %     force the install.
     %   Inputs:
     %     target[required]: (string) Toolbox repo (e.g. 'org1/repo1') or local path to *.mltbx
-    %     version[optional, default='latest']: (string) Version to be installed e.g. '1.0.0'
+    %     version[optional, default='latest']: (string||handle) Version to be installed e.g.
+    %                                          '1.0.0' or version handle of the form @(v) that
+    %                                          resolves to acceptable versions. Handle approach
+    %                                          should expect v to be a cell array of version
+    %                                          candidates and return a logical array of result.
     %     override[optional, default=false]: (boolean) Flag to indicate if should override an
     %                                        existing install
     %   Assumptions:
@@ -20,6 +24,8 @@ function install(target, varargin)
     %     ghtb.install('guzman-raphael/compareVersions')
     %     ghtb.install('guzman-raphael/compareVersions', 'version', '1.0.7')
     %     ghtb.install('guzman-raphael/compareVersions', 'version', '1.0.6', 'override', true)
+    %     ghtb.install('guzman-raphael/compareVersions', 'version', ...
+    %                  @(v) cellfun(@(x) contains(x, '1.0.'), v, 'uni', true))
     %     ghtb.install('compareVersions.mltbx') %install from local toolbox file
     clear('functions'); %needed for uninstall of mex-based toolboxes
     s = settings;
@@ -38,15 +44,22 @@ function install(target, varargin)
                                               'application/vnd.github.v3.raw'}, ...
                              'ContentType', 'json', ...
                              'Timeout', 60);
-        if strcmp(version, 'latest')
+        if ~isa(version,'function_handle') && strcmp(version, 'latest')
             url = [GitHubAPI '/repos/' target '/releases/latest'];
             data = webread(url, options);
         else
             url = [GitHubAPI '/repos/' target '/releases'];
             data = webread(url, options);
-            % need to optimize to break out on first match
-            data = data(arrayfun(@(x) strcmp(x.tag_name, version), data, ...
-                                 'UniformOutput', true));
+            [~,index] = sort({data.published_at});
+            data = data(flip(index).*~[data.prerelease]);
+            if isa(version,'function_handle')
+                index = version({data.tag_name});
+            else
+                index = find(ismember({data.tag_name}, version));
+            end
+            % assumes descending order
+            data = data(index);
+            data = data(1);
         end
         if length(data.assets) == 0
             error('GHToolbox:Release:NotFound', ...

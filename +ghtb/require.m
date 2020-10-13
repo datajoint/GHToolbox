@@ -9,8 +9,9 @@ function require(requiredToolboxes, varargin)
     %                                  resolved with installation. Each cell should contain a
     %                                  struct with fields: Name[required, string],
     %                                  ResolveTarget[required, string],
-    %                                  Version[optional, string]. Version specified 'pins' it
-    %                                  i.e. version equals operation. See below for examples.
+    %                                  Version[optional, string||handle]. For Version
+    %                                  specification, see below for examples or
+    %                                  see help(ghtb.install) for accepted Version assignment.
     %     prompt[optional, default=true]: (boolean) Whether to silently install or use prompts.
     %     resolveGHToolboxDeps[optional, default=true]: (boolean) Resolve dependencies related
     %                                                   to GHToolbox.
@@ -24,6 +25,11 @@ function require(requiredToolboxes, varargin)
     %             'Name', 'compareVersions', ...
     %             'ResolveTarget', 'guzman-raphael/compareVersions', ...
     %             'Version', '1.0.8'...
+    %         ), ...
+    %         struct(...
+    %             'Name', 'mym', ...
+    %             'ResolveTarget', 'datajoint/mym', ...
+    %             'Version', @(v) cellfun(@(x) contains(x, '2.7.'), v, 'uni', true)...
     %         )...
     %     };
     %     ghtb.require(requiredToolboxes) % require with prompts
@@ -54,7 +60,7 @@ function require(requiredToolboxes, varargin)
     end
     installPromptMsg = {
         'Toolbox ''%s'' did not meet the minimum requirements.'
-        'Would you like to proceed with an upgrade?'
+        'Would you like to proceed with the install?'
     };
     for tb = requiredToolboxes
         matched = toolboxes(strcmp(tb{1}.Name, {toolboxes.Name}));
@@ -62,7 +68,7 @@ function require(requiredToolboxes, varargin)
                                              matched, 'uni', true))
             % toolbox found
         elseif isfield(tb{1}, 'Version') && any(arrayfun(@(x) strcmp(x.Name, tb{1}.Name) && ...
-                compareVersions({x.Version}, tb{1}.Version), matched, 'uni', true))
+                tb{1}.Version({x.Version}), matched, 'uni', true))
             % toolbox found with appropriate version
         elseif ~isfield(tb{1}, 'Version') && ~isempty(tb{1}.ResolveTarget) && ...
                 (~prompt || strcmpi('yes', ...
