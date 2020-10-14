@@ -6,7 +6,7 @@
     <param.company />
     <param.summary>{{SUMMARY}}</param.summary>
     <param.description>{{DESCRIPTION}}</param.description>
-    <param.screenshot />
+    <param.screenshot>{{SCREENSHOT_FILE}}</param.screenshot>
     <param.version>{{VERSION}}</param.version>
     <param.output>${PROJECT_ROOT}/empty.mltbx</param.output>
     <param.products.name />
