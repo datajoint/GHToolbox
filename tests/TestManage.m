@@ -32,6 +32,41 @@ classdef TestManage < matlab.unittest.TestCase
                                                 @(curr_v,ref_v) curr_v==ref_v));
             ghtb.uninstall('compareVersions');
         end
+        function TestManage_testRequireHandle(testCase)
+            st = dbstack;
+            disp(['---------------' st(1).name '---------------']);
+            requiredToolboxes = {...
+                struct(...
+                    'Name', 'mym', ...
+                    'ResolveTarget', 'guzman-raphael/mym', ...
+                    'Version', @(v) cellfun(@(x) contains(x, '2.7.'), v, 'uni', true)...
+                )...
+            };
+            ghtb.require(requiredToolboxes, 'prompt', false);
+            ghtb.require(requiredToolboxes, 'prompt', false);
+
+            toolboxes = matlab.addons.toolbox.installedToolboxes;
+            tb_version = toolboxes(strcmp('mym', {toolboxes.Name})).Version;
+
+            ghtb.uninstall('mym');
+            ghtb.uninstall('compareVersions');
+        end
+        function TestManage_testRequireChar(testCase)
+            st = dbstack;
+            disp(['---------------' st(1).name '---------------']);
+            requiredToolboxes = {...
+                struct(...
+                    'Name', 'mym', ...
+                    'ResolveTarget', 'guzman-raphael/mym', ...
+                    'Version', '2.7.3'...
+                )...
+            };
+            ghtb.require(requiredToolboxes, 'prompt', false);
+            ghtb.require(requiredToolboxes, 'prompt', false);
+
+            ghtb.uninstall('mym');
+            ghtb.uninstall('compareVersions');
+        end
         function TestManage_initialize(testCase)
             st = dbstack;
             disp(['---------------' st(1).name '---------------']);
