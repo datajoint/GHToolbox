@@ -21,7 +21,8 @@ function package(toolboxName, toolboxAuthor, toolboxContact, toolboxSummary, ...
     %     toolboxRootDir[optional, default=pwd]: (string) Local path of Toolbox base directory.
     %     toolboxProjectDir[optional, default=pwd]: (string) Path where Toolbox/.prj will write
     %     toolboxVersionDir[optional, default=pwd]: (string) Path necessary for version func
-    %     *toolboxRequiredAddons[optional, default={}]: (cell) Toolboxes or addons to include.
+	%     *toolboxRequiredAddons[optional, default={}]: (cell) Toolboxes or addons to include.
+	%     toolboxScreenshotFile[optional, default='']: (string) Path to icon/screenshot file.
     %     * = Experimental
     %   Examples:
     %     ghtb.package('GHToolbox', ...
@@ -64,6 +65,7 @@ function package(toolboxName, toolboxAuthor, toolboxContact, toolboxSummary, ...
     addOptional(p, 'toolboxProjectDir', pwd);
     addOptional(p, 'toolboxVersionDir', pwd);
     addOptional(p, 'toolboxRequiredAddons', {});
+    addOptional(p, 'toolboxScreenshotFile', '');
     parse(p, toolboxName, toolboxAuthor, toolboxContact, toolboxSummary, ...
           toolboxDescription, toolboxExclusions, toolboxVersionHandle, ...
           toolboxRootFiles, varargin{:});
@@ -81,6 +83,7 @@ function package(toolboxName, toolboxAuthor, toolboxContact, toolboxSummary, ...
     toolboxProjectDir = strrep(p.Results.toolboxProjectDir, '\', '/');
     toolboxVersionDir = strrep(p.Results.toolboxVersionDir, '\', '/');
     toolboxRequiredAddons = p.Results.toolboxRequiredAddons;
+    toolboxScreenshotFile = strrep(p.Results.toolboxScreenshotFile, '\', '/');
     % get version
     oldpath = pwd;
     cd(toolboxVersionDir);
@@ -106,6 +109,10 @@ function package(toolboxName, toolboxAuthor, toolboxContact, toolboxSummary, ...
                                                       toolboxRootFiles, 'uni', false), '\n'));
     f = regexprep(f,'{{ROOT_DIR}}', toolboxRootDir);
     f = regexprep(f,'{{REQUIRED_ADDONS}}', strjoin(toolboxRequiredAddons, '\n'));
+    if ~isempty(toolboxScreenshotFile)
+		toolboxScreenshotFile = which(toolboxScreenshotFile);
+    end
+    f = regexprep(f,'{{SCREENSHOT_FILE}}', toolboxScreenshotFile);
     fid = fopen([toolboxProjectDir '/package.prj'], 'w');
     fprintf(fid,'%s',f);
     fclose(fid);
