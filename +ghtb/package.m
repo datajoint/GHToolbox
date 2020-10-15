@@ -21,8 +21,8 @@ function package(toolboxName, toolboxAuthor, toolboxContact, toolboxSummary, ...
     %     toolboxRootDir[optional, default=pwd]: (string) Local path of Toolbox base directory.
     %     toolboxProjectDir[optional, default=pwd]: (string) Path where Toolbox/.prj will write
     %     toolboxVersionDir[optional, default=pwd]: (string) Path necessary for version func
-	%     *toolboxRequiredAddons[optional, default={}]: (cell) Toolboxes or addons to include.
-	%     toolboxScreenshotFile[optional, default='']: (string) Path to icon/screenshot file.
+	  %     *toolboxRequiredAddons[optional, default={}]: (cell) Toolboxes or addons to include.
+	  %     *toolboxScreenshotFile[optional, default='']: (string) Path to icon/screenshot file.
     %     * = Experimental
     %   Examples:
     %     ghtb.package('GHToolbox', ...
