@@ -50,14 +50,14 @@ function install(target, varargin)
         else
             url = [GitHubAPI '/repos/' target '/releases'];
             data = webread(url, options);
+            data = data(~[data.prerelease]);
             [~,index] = sort({data.published_at});
-            data = data(flip(index).*~[data.prerelease]);
+            data = data(flip(index));
             if isa(version,'function_handle')
                 index = version({data.tag_name});
             else
                 index = find(ismember({data.tag_name}, version));
             end
-            % assumes descending order
             data = data(index);
             data = data(1);
         end
