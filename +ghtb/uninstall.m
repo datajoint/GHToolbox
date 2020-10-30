@@ -17,7 +17,7 @@ function uninstall(varargin)
     parse(p, varargin{:});
     toolboxName = p.Results.toolboxName;
     % determine toolbox root
-    if verLessThan('matlab', '9.2')
+    if verLessThan('matlab', '9.5')
         toolboxRoot = [strrep(s.matlab.addons.InstallationFolder.ActiveValue, '\', '/') ...
                        '/Toolboxes/' toolboxName '/code'];
     else
