@@ -16,6 +16,7 @@ services:
       - /bin/bash
       - -c
       - |
+        mkdir ~/Documents
         # init pref file, package into toolbox
         matlab -nodisplay -r "
           doc_version = help('ghtb.version');\
@@ -48,4 +49,4 @@ services:
       - .:/src
       - /tmp/.X11-unix:/tmp/.X11-unix:rw
       ## Additional mounts may go here
-      - ./matlab.prf:/tmp/matlab.prf
+      # - ./matlab.prf:/tmp/matlab.prf
