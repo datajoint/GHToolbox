@@ -3,3 +3,4 @@ matlab.prf
 .env
 package.prj
 .vscode
+*.mltbx
