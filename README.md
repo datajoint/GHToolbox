@@ -1,3 +1,7 @@
+> ⚠️ **This repository is archived and no longer maintained.**
+> MATLAB toolbox installer, no longer maintained.
+> For current DataJoint development, see [datajoint-python](https://github.com/datajoint/datajoint-python).
+
 [![View GHToolbox on File Exchange](https://www.mathworks.com/matlabcentral/images/matlab-file-exchange.svg)](https://www.mathworks.com/matlabcentral/fileexchange/80245-ghtoolbox)
 
 # GitHub Toolbox Utility
